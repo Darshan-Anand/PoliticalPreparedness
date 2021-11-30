@@ -80,4 +80,7 @@ dependencies {
 
     //Timber
     implementation "com.jakewharton.timber:timber:$version_timber"
+
+    //Material Design
+    implementation "com.google.android.material:material:$version_material_design"
 }
