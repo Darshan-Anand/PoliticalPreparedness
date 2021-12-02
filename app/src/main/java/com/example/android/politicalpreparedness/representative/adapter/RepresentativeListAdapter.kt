@@ -1,3 +1,4 @@
+/*
 package com.example.android.politicalpreparedness.representative.adapter
 
 import android.content.Intent
@@ -80,4 +81,4 @@ class RepresentativeViewHolder(val binding: ViewholderRepresentativeBinding): Re
 
 //TODO: Create RepresentativeDiffCallback
 
-//TODO: Create RepresentativeListener
+//TODO: Create RepresentativeListener*/
