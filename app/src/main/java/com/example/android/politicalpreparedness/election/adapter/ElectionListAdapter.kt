@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.politicalpreparedness.databinding.ElectionsListBinding
+import com.example.android.politicalpreparedness.network.models.Division
 import com.example.android.politicalpreparedness.network.models.Election
 
 
@@ -23,8 +24,8 @@ class ElectionListAdapter(private val clickListener: ElectionListener) :
         holder.bind(clickListener, item)
     }
 
-    class ElectionListener (val clickListener: (electionId: Int) -> Unit) {
-        fun onClick(election: Election) = clickListener(election.id)
+    class ElectionListener (val clickListener: (mElection : Election) -> Unit) {
+        fun onClick(election: Election) = clickListener(election)
     }
 
 
