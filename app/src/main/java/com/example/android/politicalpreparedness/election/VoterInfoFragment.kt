@@ -25,18 +25,20 @@ class VoterInfoFragment : Fragment() {
 
         binding = FragmentVoterInfoBinding.inflate(inflater)
 
-        val voterInfoViewModelFactory = VoterInfoViewModelFactory(args.election)
+        val voterInfoViewModelFactory =
+            VoterInfoViewModelFactory(requireActivity().applicationContext)
         viewModel = ViewModelProvider(
             requireActivity(),
             voterInfoViewModelFactory
         ).get(VoterInfoViewModel::class.java)
 
-
-        //TODO: Add binding values
-
         binding.viewModel = viewModel
 
-        viewModel.electionSelected.observe(requireActivity(), {
+        val address = viewModel.getAddress(args.argDivision)
+
+        viewModel.loadElectionInfo(address, args.argElectionId, args.argLoadFromDb)
+
+        viewModel.election.observe(requireActivity(), {
             binding.election = it
         })
 
@@ -44,31 +46,30 @@ class VoterInfoFragment : Fragment() {
             binding.stateAdministrationBody = it
         })
 
-        //TODO: Populate voter info -- hide views without provided data.
-        /**
-        Hint: You will need to ensure proper data is provided from previous fragment.
-         */
 
-
-        //TODO: Handle loading of URLs
         binding.stateBallot.setOnClickListener {
             val adminBody = viewModel.stateAdministrationBody.value
             loadElectionInfoUrl(adminBody?.ballotInfoUrl)
         }
+
         binding.stateLocations.setOnClickListener {
             val adminBody = viewModel.stateAdministrationBody.value
             loadElectionInfoUrl(adminBody?.electionInfoUrl)
         }
 
-        //TODO: Handle save button UI state
-        //TODO: cont'd Handle save button clicks
 
+        viewModel.followElectionButtonText.observe(requireActivity(), {
+            binding.followElectionButton.text = it
+        })
+
+        binding.followElectionButton.setOnClickListener {
+            viewModel.followOrUnfollowElection(args.argElectionId)
+        }
 
         return binding.root
     }
 
-    //TODO: Create method to load URL intents
-    fun loadElectionInfoUrl(url: String?) {
+    private fun loadElectionInfoUrl(url: String?) {
         Intent(Intent.ACTION_VIEW).run {
             data = Uri.parse(url)
             startActivity(this)

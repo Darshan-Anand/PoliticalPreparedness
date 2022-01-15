@@ -1,63 +1,104 @@
 package com.example.android.politicalpreparedness.election
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.politicalpreparedness.Repository
+import com.example.android.politicalpreparedness.database.ElectionAndAdministrationBody
 import com.example.android.politicalpreparedness.network.models.AdministrationBody
+import com.example.android.politicalpreparedness.network.models.Division
 import com.example.android.politicalpreparedness.network.models.Election
-import com.example.android.politicalpreparedness.network.models.State
+import com.example.android.politicalpreparedness.network.models.VoterInfoResponse
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-//class VoterInfoViewModel(private val dataSource: ElectionDao) : ViewModel() {
-class VoterInfoViewModel(private val election: Election) : ViewModel() {
-    private val repository = Repository()
 
-    //TODO: Add live data to hold voter info
-    private val _voterInfoState = MutableLiveData<State>()
-    val voterInfoState: LiveData<State>
-        get() = _voterInfoState
+class VoterInfoViewModel(applicationContext: Context) :
+    ViewModel() {
+    private val repository = Repository(applicationContext)
 
-
-    //TODO: Add var and methods to populate voter info
-    private val _electionSelected = MutableLiveData<Election>()
-    val electionSelected: LiveData<Election>
-        get() = _electionSelected
-
-    //TODO: Add var and methods to support loading URLs
+    private val _election = MutableLiveData<Election>()
+    val election: LiveData<Election>
+        get() = _election
 
     private val _stateAdministrationBody = MutableLiveData<AdministrationBody>()
     val stateAdministrationBody: LiveData<AdministrationBody>
         get() = _stateAdministrationBody
 
-    //TODO: Add var and methods to save and remove elections to local database
-    //TODO: cont'd -- Populate initial state of save button to reflect proper action based on election saved status
+    private val _followElectionButtonText = MutableLiveData<String>()
+    val followElectionButtonText: LiveData<String>
+        get() = _followElectionButtonText
 
-    /**
-     * Hint: The saved state can be accomplished in multiple ways. It is directly related to how elections are saved/removed from the database.
-     */
 
-    private fun getVoterInfo(address: String, electionId: Int) {
-        viewModelScope.launch {
-            _stateAdministrationBody.value =
-                repository.getVoterInfo(address, electionId)?.electionAdministrationBody
-        }
-    }
-
-    private fun getAddress(): String {
-        if (election.division.state.isNotEmpty()) {
-            return "${election.division.country},${election.division.state}"
+    fun getAddress(division: Division): String {
+        if (division.state.isNotEmpty()) {
+            return "${division.country},${division.state}"
         }
         return "USA,WA"
     }
 
-
-    init {
-        _electionSelected.value = election
-        Timber.d("address: ${getAddress()}")
-        getVoterInfo(getAddress(), election.id)
+    fun loadElectionInfo(address: String, electionId: Int, loadFromDB: Boolean) {
+        Timber.d("loadFromDb= $loadFromDB")
+        if (loadFromDB) {
+            getElectionInfoFromDb(electionId)
+        } else {
+            getElectionInfoFromNetwork(address, electionId)
+        }
+        updateFollowButtonText(electionId)
     }
+
+    private fun getElectionInfoFromNetwork(address: String, electionId: Int) {
+        viewModelScope.launch {
+            val voterInfoResponse: VoterInfoResponse? =
+                repository.getElectionInfo(address, electionId)
+            if (voterInfoResponse != null) {
+                _election.value = voterInfoResponse.election
+                _stateAdministrationBody.value =
+                    voterInfoResponse.state?.first()?.electionAdministrationBody
+            }
+        }
+    }
+
+    private fun getElectionInfoFromDb(electionId: Int) {
+        viewModelScope.launch {
+            val electionAndAdministrationBody: ElectionAndAdministrationBody =
+                repository.getElectionAndAdministrationBody(electionId)!!
+            _election.value = electionAndAdministrationBody.election
+            _stateAdministrationBody.value = electionAndAdministrationBody.administrationBody
+        }
+    }
+
+    fun followOrUnfollowElection(electionId: Int) {
+        viewModelScope.launch {
+            val electionFromDB = repository.getElectionFromDb(electionId)
+            if (electionFromDB == electionId) {
+                repository.deleteElectionAndAdministrationBody(
+                    _election.value!!,
+                    _stateAdministrationBody.value!!
+                )
+            } else {
+                repository.insertElectionAndAdministrationBody(
+                    election.value!!,
+                    _stateAdministrationBody.value!!
+                )
+            }
+            updateFollowButtonText(electionId)
+        }
+    }
+
+    private fun updateFollowButtonText(electionId: Int) {
+        viewModelScope.launch {
+            val electionFromDB = repository.getElectionFromDb(electionId)
+            Timber.d("electionID= $electionId, electionIdFromDb= $electionFromDB")
+            if (electionFromDB == electionId) {
+                _followElectionButtonText.value = "Unfollow"
+            } else {
+                _followElectionButtonText.value = "Follow"
+            }
+        }
+    }
+
 
 }

@@ -29,8 +29,19 @@
         android:name="com.example.android.politicalpreparedness.election.VoterInfoFragment"
         android:label="fragment_voter_info">
         <argument
-            android:name="election"
-            app:argType="com.example.android.politicalpreparedness.network.models.Election"/>
+            android:name="arg_election_id"
+            app:argType="integer" />
+        <argument
+            android:name="arg_division"
+            app:argType="com.example.android.politicalpreparedness.network.models.Division" />
+        <argument
+            android:name="arg_load_from_db"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_voterInfoFragment_to_electionsFragment"
+            app:destination="@id/electionsFragment"
+            app:popUpTo="@id/electionsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/electionsFragment"

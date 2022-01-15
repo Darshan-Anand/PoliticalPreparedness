@@ -24,7 +24,8 @@ class ElectionsFragment : Fragment() {
         binding = FragmentElectionBinding.inflate(inflater)
 
         //Factory to get ElectionViewModel
-        val electionsViewModelFactory = ElectionsViewModelFactory()
+        val electionsViewModelFactory =
+            ElectionsViewModelFactory(requireActivity().applicationContext)
 
         /**
          * Getting instance of view model
@@ -37,24 +38,14 @@ class ElectionsFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        /**
-         * Observing
-         */
-        viewModel.navigateToVoterInfo.observe(requireActivity(), { election ->
-            election?.let {
-                findNavController().navigate(
-                    ElectionsFragmentDirections.actionElectionsFragmentToVoterInfoFragment(
-                        election
-                    )
-                )
-                viewModel.doneNavigationToVoterInfo()
-            }
-
-        })
-
         val upcomingElectionListAdapter =
             ElectionListAdapter(ElectionListAdapter.ElectionListener { election ->
-                viewModel.startNavigationToVoterInfo(election)
+                //viewModel.startNavigationToVoterInfo(election)
+                findNavController().navigate(
+                    ElectionsFragmentDirections.actionElectionsFragmentToVoterInfoFragment(
+                        election.id, election.division, false
+                    )
+                )
             })
 
         binding.upcomingElectionsContainer.adapter = upcomingElectionListAdapter
@@ -63,9 +54,23 @@ class ElectionsFragment : Fragment() {
             upcomingElectionListAdapter.submitList(electionsList)
         })
 
+        val savedElectionListAdapter =
+            ElectionListAdapter(ElectionListAdapter.ElectionListener { election ->
+                findNavController().navigate(
+                    ElectionsFragmentDirections.actionElectionsFragmentToVoterInfoFragment(
+                        election.id, election.division, true
+                    )
+                )
+            })
+
+        binding.savedElectionsContainer.adapter = savedElectionListAdapter
+
+        viewModel.savedElections.observe(requireActivity(), { electionList ->
+            savedElectionListAdapter.submitList(electionList)
+        })
+
+        viewModel.loadElections()
         return binding.root
     }
-
-    //TODO: Refresh adapters when fragment loads
 
 }
