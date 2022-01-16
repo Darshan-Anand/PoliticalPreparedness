@@ -83,4 +83,8 @@ dependencies {
 
     //Material Design
     implementation "com.google.android.material:material:$version_material_design"
+
+    //Google-play service
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+
 }
