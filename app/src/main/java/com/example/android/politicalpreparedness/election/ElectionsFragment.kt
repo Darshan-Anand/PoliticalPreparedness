@@ -29,6 +29,7 @@ class ElectionsFragment : Fragment() {
         electionsViewModel =
             ViewModelProvider(this, electionsViewModelFactory).get(ElectionsViewModel::class.java)
 
+
         binding.apply {
             lifecycleOwner = this@ElectionsFragment
             viewModel = electionsViewModel

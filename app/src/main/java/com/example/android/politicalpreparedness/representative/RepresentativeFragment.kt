@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.network.models.Address
@@ -58,6 +59,18 @@ class DetailFragment : Fragment() {
             }
         }
 
+        binding.addressLine1.doOnTextChanged { _, _, _, _ ->
+            binding.addressLine1Container.error = null
+        }
+
+        binding.city.doOnTextChanged { _, _, _, _ ->
+            binding.cityContainer.error = null
+        }
+
+        binding.zip.doOnTextChanged { _, _, _, _ ->
+            binding.zipContainer.error = null
+        }
+
         binding.buttonLocation.setOnClickListener {
             checkLocationPermissions()
         }
@@ -72,14 +85,14 @@ class DetailFragment : Fragment() {
     private fun checkAddressFieldsNotEmpty(): String? {
         var address: String? = null
         when {
-            binding.addressLine1.text.isEmpty() -> {
-                binding.addressLine1.error = "Field shouldn't be empty"
+            binding.addressLine1.text?.isEmpty() == true -> {
+                binding.addressLine1Container.error = "Field shouldn't be empty"
             }
-            binding.city.text.isEmpty() -> {
-                binding.city.error = "Please enter the city name"
+            binding.city.text?.isEmpty() == true -> {
+                binding.cityContainer.error = "Please enter the city name"
             }
-            binding.zip.text.isEmpty() -> {
-                binding.zip.error = "Enter Zip Code"
+            binding.zip.text?.isEmpty() == true -> {
+                binding.zipContainer.error = "Enter Zip Code"
             }
             else -> {
                 address = binding.addressLine1.text.toString().trim().plus(",")

@@ -4,5 +4,15 @@
     <string name="upcoming_elections">Upcoming Elections</string>
     <string name="find_my_representatives">Find My Representatives</string>
     <string name="address">Address:</string>
+    <string name="ballot_information">Ballot Information</string>
+    <string name="voting_locations">Voting Locations</string>
+    <string name="address_line_1">Address Line 1</string>
+    <string name="address_line_2">Address Line 2</string>
+    <string name="city">City</string>
+    <string name="zip">Zip</string>
+    <string name="use_my_location">Use My Location</string>
+    <string name="find_my_representative">Find My Representative</string>
+    <string name="title_my_representatives">Representatives Lists:</string>
+    <string name="title_representative_search">Representative Search</string>
 
 </resources>

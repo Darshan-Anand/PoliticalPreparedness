@@ -4,19 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="election"
             type="com.example.android.politicalpreparedness.network.models.Election" />
+
         <variable
             name="clickListener"
             type="com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter.ElectionListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Election.CardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="8dp"
-        app:cardCornerRadius="8dp"
+        android:layout_height="80dp"
         android:onClick="@{() -> clickListener.onClick(election)}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,26 +29,44 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                app:layout_constraintStart_toEndOf="parent"
+                android:fontFamily="@font/convergence"
+                android:gravity="center_horizontal"
+                android:text="@{election.name}"
+                android:textColor="@color/secondaryDarkColor"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="VIP Test Election"
-                android:text="@{election.name}"/>
+                tools:text="VIP Test Election" />
+
+            <TextView
+                android:id="@+id/election_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/secondaryColor"
+                android:textSize="14sp"
+                app:electionDay="@{election.electionDay}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/election_date"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Sunday" />
 
             <TextView
                 android:id="@+id/election_date"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/secondaryColor"
+                android:textSize="14sp"
+                app:electionDate="@{election.electionDay}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/election_name"
-                tools:text="2025-06-06"
-                android:text="@{election.electionDay.toString()}"/>
+                app:layout_constraintStart_toEndOf="@+id/election_day"
+                tools:text="2025-06-06" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
