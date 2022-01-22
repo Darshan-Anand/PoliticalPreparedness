@@ -10,10 +10,12 @@
             type="com.example.android.politicalpreparedness.network.models.Address" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/constraint_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/fragment_representative_scene"
+        app:showPaths="false">
 
         <TextView
             android:id="@+id/search_title"
@@ -119,13 +121,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:entries="@array/states"
             android:inputType="textPostalAddress"
             app:layout_constraintEnd_toEndOf="@id/city_container"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/city_container"
-            app:stateValue="@{address.state}" />-->
+            app:stateValue="@{address.state}" />
 
         <Button
             android:id="@+id/button_search"
@@ -178,5 +181,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/representative_title"
             tools:listitem="@layout/representative_list" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
