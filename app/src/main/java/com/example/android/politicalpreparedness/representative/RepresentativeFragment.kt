@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
+import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.representative.adapter.RepresentativeListAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -75,10 +76,23 @@ class DetailFragment : Fragment() {
             checkLocationPermissions()
         }
 
-        viewModel.representatives.observe(requireActivity(), {
+        viewModel.representatives.observe(this.viewLifecycleOwner, {
             representativeAdapter.submitList(it)
         })
 
+        viewModel.networkException.observe(this.viewLifecycleOwner, {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        })
+
+        ElectionsNetworkManager.getInstance(requireActivity().applicationContext).connectedToNetwork.observe(
+            this.viewLifecycleOwner,
+            { isNetworkAvailable ->
+                Timber.d("isNetworkAvailable: $isNetworkAvailable")
+                if (!isNetworkAvailable) {
+                    Toast.makeText(requireContext(), "No Network Available", Toast.LENGTH_LONG)
+                        .show()
+                }
+            })
         return binding.root
     }
 

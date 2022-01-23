@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.android.politicalpreparedness.Repository
 import com.example.android.politicalpreparedness.representative.model.Representative
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RepresentativeViewModel(applicationContext: Context) : ViewModel() {
 
@@ -18,28 +19,22 @@ class RepresentativeViewModel(applicationContext: Context) : ViewModel() {
     val representatives: LiveData<List<Representative>>
         get() = _representatives
 
+    private var _networkException = MutableLiveData<String>()
+    val networkException: MutableLiveData<String>
+        get() = _networkException
+
     fun getRepresentatives(address: String) {
         viewModelScope.launch {
-            val (offices, officials)  = repository.getRepresentativeInfoByAddress(address)
-            _representatives.value = offices.flatMap {
-                it.getRepresentatives(officials)
+            try {
+                val (offices, officials) = repository.getRepresentativeInfoByAddress(address)
+                _representatives.value = offices.flatMap {
+                    it.getRepresentatives(officials)
+                }
+            } catch (exception: Exception) {
+                Timber.d("Representative Exception: ${exception.message}, cause: ${exception.cause}")
+                _networkException.postValue(exception.message)
             }
         }
     }
-
-    /**
-     *  The following code will prove helpful in constructing a representative from the API. This code combines the two nodes of the RepresentativeResponse into a single official :
-
-    val (offices, officials) = getRepresentativesDeferred.await()
-    _representatives.value = offices.flatMap { office -> office.getRepresentatives(officials) }
-
-    Note: getRepresentatives in the above code represents the method used to fetch data from the API
-    Note: _representatives in the above code represents the established mutable live data housing representatives
-
-     */
-
-    //TODO: Create function get address from geo location
-
-    //TODO: Create function to get address from individual fields
 
 }
