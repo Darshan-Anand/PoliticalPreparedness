@@ -17,7 +17,7 @@
     <com.google.android.material.card.MaterialCardView
         style="@style/Election.CardView"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:onClick="@{() -> clickListener.onClick(election)}">
 
         <androidx.constraintlayout.widget.ConstraintLayout

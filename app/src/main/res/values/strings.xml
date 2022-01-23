@@ -14,5 +14,7 @@
     <string name="find_my_representative">Find My Representative</string>
     <string name="title_my_representatives">Representatives Lists:</string>
     <string name="title_representative_search">Representative Search</string>
+    <string name="saved_elections">Saved Elections</string>
+    <string name="network_error_response_image">Network Error Response Image</string>
 
 </resources>

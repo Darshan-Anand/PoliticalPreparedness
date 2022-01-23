@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentElectionBinding
 import com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter
+import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
+import timber.log.Timber
 import java.util.*
 
 class ElectionsFragment : Fragment() {
@@ -46,7 +49,7 @@ class ElectionsFragment : Fragment() {
 
         binding.upcomingElectionsContainer.adapter = upcomingElectionListAdapter
 
-        electionsViewModel.upcomingElections.observe(requireActivity(), { electionsList ->
+        electionsViewModel.upcomingElections.observe(viewLifecycleOwner, { electionsList ->
             upcomingElectionListAdapter.submitList(electionsList)
         })
 
@@ -61,12 +64,44 @@ class ElectionsFragment : Fragment() {
 
         binding.savedElectionsContainer.adapter = savedElectionListAdapter
 
-        electionsViewModel.savedElections.observe(requireActivity(), { electionList ->
+        electionsViewModel.savedElections.observe(viewLifecycleOwner, { electionList ->
             savedElectionListAdapter.submitList(electionList)
         })
 
-        electionsViewModel.loadElections()
+        refreshElections()
+
+        binding.refreshUpcomingElections.setOnRefreshListener {
+            Timber.d("on refresh upcoming called")
+            refreshElections()
+        }
         return binding.root
+    }
+
+    private fun refreshElections() {
+        val netManager = ElectionsNetworkManager.getInstance(requireActivity().applicationContext)
+        netManager.connectedToNetwork.observe(viewLifecycleOwner, { isNetworkAvailable ->
+            Timber.d("isNetworkAvailable: $isNetworkAvailable")
+            if (isNetworkAvailable) {
+                showUpcomingElections()
+            } else {
+                showNoConnection()
+            }
+        })
+        electionsViewModel.getSavedElections()
+    }
+
+    private fun showNoConnection() {
+        binding.upcomingElectionsContainer.visibility = View.GONE
+        binding.errorIcon.visibility = View.VISIBLE
+        binding.errorIcon.setImageResource(R.drawable.no_connection)
+        binding.refreshUpcomingElections.isRefreshing = false
+    }
+
+    private fun showUpcomingElections() {
+        binding.errorIcon.visibility = View.GONE
+        binding.upcomingElectionsContainer.visibility = View.VISIBLE
+        electionsViewModel.refreshElections()
+        binding.refreshUpcomingElections.isRefreshing = false
     }
 
 }

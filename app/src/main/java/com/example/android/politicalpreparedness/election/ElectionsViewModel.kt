@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.android.politicalpreparedness.Repository
 import com.example.android.politicalpreparedness.network.models.Election
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ElectionsViewModel(applicationContext: Context) : ViewModel() {
 
@@ -21,21 +22,30 @@ class ElectionsViewModel(applicationContext: Context) : ViewModel() {
     val savedElections: LiveData<List<Election>>
         get() = _savedElections
 
-    private fun getUpcomingElections() {
-        viewModelScope.launch() {
-            _upcomingElections.value = repository.getUpcomingElectionsList()
+    fun getUpcomingElections() {
+        try {
+            viewModelScope.launch() {
+                _upcomingElections.value = repository.getUpcomingElectionsList()
+            }
+        } catch (exception: Exception) {
+            Timber.d("getUpcomingElections exception: ${exception.message}")
         }
     }
 
-    private fun getSavedElections() {
-        viewModelScope.launch {
-            _savedElections.value = repository.getSavedElectionsList()
+    fun getSavedElections() {
+        try {
+            viewModelScope.launch {
+                _savedElections.value = repository.getSavedElectionsList()
+            }
+        } catch (exception: Exception) {
+            Timber.d("getSavedElection exception: ${exception.message}")
         }
     }
 
-    fun loadElections() {
+    fun refreshElections() {
         getSavedElections()
         getUpcomingElections()
     }
+
 
 }
