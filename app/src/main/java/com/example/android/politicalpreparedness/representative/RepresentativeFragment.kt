@@ -28,7 +28,6 @@ import java.util.*
 class DetailFragment : Fragment() {
 
     companion object {
-        const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 333
         const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 334
     }
 
@@ -128,9 +127,6 @@ class DetailFragment : Fragment() {
         if (
             grantResults.isEmpty() ||
             grantResults[0] == PackageManager.PERMISSION_DENIED ||
-            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[1] ==
-                    PackageManager.PERMISSION_DENIED) ||
             (requestCode == REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE &&
                     grantResults[1] ==
                     PackageManager.PERMISSION_DENIED)
@@ -156,20 +152,10 @@ class DetailFragment : Fragment() {
     }
 
     private fun isPermissionGranted(): Boolean {
-        val foregroundLocationApproved = (
-                PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ))
-        val backgroundPermissionApproved = if (runningQOrLater) {
-            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            )
-        } else {
-            true
-        }
-        return foregroundLocationApproved && backgroundPermissionApproved
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -205,14 +191,8 @@ class DetailFragment : Fragment() {
     }
 
     private fun requestLocationPermission() {
-        var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        val resultCode = when {
-            runningQOrLater -> {
-                permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
-            }
-            else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-        }
+        val permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        val resultCode = REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
         requireActivity().requestPermissions(permissionsArray, resultCode)
     }
 
