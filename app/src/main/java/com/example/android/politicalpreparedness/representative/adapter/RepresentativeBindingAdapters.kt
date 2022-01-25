@@ -14,15 +14,13 @@ fun fetchImage(view: ImageView, src: String?) {
     src?.let {
         val uri = src.toUri().buildUpon().scheme("https").build()
         val context = view.context
-        if (null != uri) {
-            Timber.d("Photo Uri: $uri")
-            Glide.with(context)
-                .load(src)
-                .error(R.drawable.ic_profile)
-                .placeholder(R.drawable.ic_profile)
-                .centerCrop()
-                .into(view)
-        }
+        Timber.d("Photo Uri: $uri")
+        Glide.with(context)
+            .load(src)
+            .error(R.drawable.ic_profile)
+            .placeholder(R.drawable.ic_profile)
+            .centerCrop()
+            .into(view)
     }
 }
 
