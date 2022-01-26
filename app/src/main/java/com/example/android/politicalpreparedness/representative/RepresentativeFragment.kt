@@ -63,6 +63,7 @@ class DetailFragment : Fragment() {
         binding.representativesContainer.adapter = representativeAdapter
 
         binding.buttonSearch.setOnClickListener {
+            checkNetworkAvailable()
             val address = checkAddressFieldsNotEmpty()
             if (address != null) {
                 representativeViewModel.getRepresentatives(address)
@@ -86,16 +87,31 @@ class DetailFragment : Fragment() {
             checkLocationPermissions()
         }
 
-        representativeViewModel.representatives.observe(this.viewLifecycleOwner, {
+        representativeViewModel.representatives.observe(viewLifecycleOwner, {
             hideKeyboard()
             representativeAdapter.submitList(it)
             representativeViewModel.setListShowing(true)
+        })
+
+        representativeViewModel.motionTransition.observe(viewLifecycleOwner, { id ->
+            if (id != null) {
+                binding.constraintContainer.transitionToState(id)
+            }
         })
 
         representativeViewModel.networkException.observe(this.viewLifecycleOwner, {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
 
+        return binding.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        representativeViewModel.setMotionTransitionId(binding.constraintContainer.currentState)
+    }
+
+    private fun checkNetworkAvailable() {
         ElectionsNetworkManager.getInstance(requireActivity().applicationContext).connectedToNetwork.observe(
             this.viewLifecycleOwner,
             { isNetworkAvailable ->
@@ -105,7 +121,6 @@ class DetailFragment : Fragment() {
                         .show()
                 }
             })
-        return binding.root
     }
 
     private fun checkAddressFieldsNotEmpty(): String? {
@@ -183,6 +198,7 @@ class DetailFragment : Fragment() {
             }
         }
     }
+
 
     private fun geoCodeLocation(location: Location): Address {
         val geocoder = Geocoder(context, Locale.getDefault())

@@ -60,6 +60,14 @@ class RepresentativeViewModel(
             savedStateHandle.set(showListKey, value.value)
         }
 
+    private var _motionTransition = MutableLiveData<Int>()
+        set(value) {
+            field = value
+            savedStateHandle.set("motion", value.value)
+        }
+    val motionTransition: LiveData<Int>
+        get() = _motionTransition
+
     private var _networkException = MutableLiveData<String>()
     val networkException: MutableLiveData<String>
         get() = _networkException
@@ -103,6 +111,7 @@ class RepresentativeViewModel(
         addressState = savedStateHandle.getLiveData(stateKey)
         addressZip = savedStateHandle.getLiveData(zipKey)
         _isListShowing = savedStateHandle.getLiveData(showListKey)
+        _motionTransition = savedStateHandle.getLiveData("motion")
     }
 
     private fun checkAddressFieldNotEmpty(): Boolean {
@@ -128,5 +137,9 @@ class RepresentativeViewModel(
 
     fun setListShowing(boolean: Boolean) {
         _isListShowing.postValue(boolean)
+    }
+
+    fun setMotionTransitionId(id: Int) {
+        _motionTransition.postValue(id)
     }
 }
