@@ -44,7 +44,7 @@ class DetailFragment : Fragment() {
         binding = FragmentRepresentativeBinding.inflate(inflater, container, false)
 
         val representativeViewModelFactory =
-            RepresentativeViewModelFactory(requireActivity().applicationContext)
+            RepresentativeViewModelFactory(requireActivity().applicationContext, this)
 
         representativeViewModel = ViewModelProvider(
             this,
@@ -87,7 +87,9 @@ class DetailFragment : Fragment() {
         }
 
         representativeViewModel.representatives.observe(this.viewLifecycleOwner, {
+            hideKeyboard()
             representativeAdapter.submitList(it)
+            representativeViewModel.setListShowing(true)
         })
 
         representativeViewModel.networkException.observe(this.viewLifecycleOwner, {
