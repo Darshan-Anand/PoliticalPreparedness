@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="address"
-            type="com.example.android.politicalpreparedness.network.models.Address" />
+            name="viewModel"
+            type="com.example.android.politicalpreparedness.representative.RepresentativeViewModel" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress"
-                android:text="@{address.line1}" />
+                android:text="@={viewModel.addressLine1}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -69,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress"
-                android:text="@{address.line2}" />
+                android:text="@={viewModel.addressLine2}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress"
-                android:text="@{address.city}" />
+                android:text="@={viewModel.addressCity}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:maxLength="5"
-                android:text="@{address.zip}" />
+                android:text="@={viewModel.addressZip}" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -128,7 +128,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/city_container"
-            app:stateValue="@{address.state}" />
+            app:stateValue="@={viewModel.addressState}" />
 
         <Button
             android:id="@+id/button_search"

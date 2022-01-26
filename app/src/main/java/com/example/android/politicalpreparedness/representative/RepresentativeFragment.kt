@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
 import com.example.android.politicalpreparedness.network.models.Address
@@ -31,10 +31,9 @@ class DetailFragment : Fragment() {
         const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 334
     }
 
-    private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     private lateinit var fusedLocationServices: FusedLocationProviderClient
 
-    private lateinit var viewModel: RepresentativeViewModel
+    private lateinit var representativeViewModel: RepresentativeViewModel
 
     private lateinit var binding: FragmentRepresentativeBinding
     override fun onCreateView(
@@ -43,9 +42,21 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRepresentativeBinding.inflate(inflater, container, false)
+
+        val representativeViewModelFactory =
+            RepresentativeViewModelFactory(requireActivity().applicationContext)
+
+        representativeViewModel = ViewModelProvider(
+            this,
+            representativeViewModelFactory
+        ).get(RepresentativeViewModel::class.java)
+
         fusedLocationServices = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        viewModel = RepresentativeViewModel(requireActivity().applicationContext)
+        binding.apply {
+            lifecycleOwner = this@DetailFragment
+            viewModel = representativeViewModel
+        }
 
         val representativeAdapter = RepresentativeListAdapter()
 
@@ -54,7 +65,7 @@ class DetailFragment : Fragment() {
         binding.buttonSearch.setOnClickListener {
             val address = checkAddressFieldsNotEmpty()
             if (address != null) {
-                viewModel.getRepresentatives(address.toString())
+                representativeViewModel.getRepresentatives(address)
                 hideKeyboard()
             }
         }
@@ -75,11 +86,11 @@ class DetailFragment : Fragment() {
             checkLocationPermissions()
         }
 
-        viewModel.representatives.observe(this.viewLifecycleOwner, {
+        representativeViewModel.representatives.observe(this.viewLifecycleOwner, {
             representativeAdapter.submitList(it)
         })
 
-        viewModel.networkException.observe(this.viewLifecycleOwner, {
+        representativeViewModel.networkException.observe(this.viewLifecycleOwner, {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
 
@@ -96,7 +107,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun checkAddressFieldsNotEmpty(): String? {
-        var address: String? = null
+        var address: Address? = null
         when {
             binding.addressLine1.text?.isEmpty() == true -> {
                 binding.addressLine1Container.error = "Field shouldn't be empty"
@@ -108,14 +119,15 @@ class DetailFragment : Fragment() {
                 binding.zipContainer.error = "Enter Zip Code"
             }
             else -> {
-                address = binding.addressLine1.text.toString().trim().plus(",")
-                    .plus(binding.addressLine2.text.toString().trim()).plus(",")
-                    .plus(binding.city.text.toString().trim()).plus(",")
-                    .plus(binding.state.selectedItem.toString().trim()).plus(",")
-                    .plus(binding.zip.text.toString().trim())
+                val line1 = binding.addressLine1.text.toString().trim()
+                val line2 = binding.addressLine2.text.toString().trim()
+                val city = binding.city.text.toString().trim()
+                val state = binding.state.selectedItem.toString().trim()
+                val zip = binding.zip.text.toString()
+                address = Address(line1, line2, city, state, zip)
             }
         }
-        return address
+        return address?.toFormattedString()
     }
 
     override fun onRequestPermissionsResult(
@@ -164,7 +176,7 @@ class DetailFragment : Fragment() {
             Timber.d("location= $location")
             if (location != null) {
                 val address = geoCodeLocation(location)
-                binding.address = address
+                representativeViewModel.setAddressFields(address)
                 Timber.d("address= $address")
             }
         }
