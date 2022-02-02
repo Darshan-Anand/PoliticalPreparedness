@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.example.android.politicalpreparedness.Repository
+import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.databinding.FragmentVoterInfoBinding
 
 class VoterInfoFragment : Fragment() {
@@ -25,8 +27,10 @@ class VoterInfoFragment : Fragment() {
 
         binding = FragmentVoterInfoBinding.inflate(inflater)
 
+        val database = ElectionDatabase.getDatabase(requireActivity().applicationContext)
+        val repository = Repository(database)
         val voterInfoViewModelFactory =
-            VoterInfoViewModelFactory(requireActivity().applicationContext)
+            VoterInfoViewModelFactory(repository)
 
         voterInfoViewModel = ViewModelProvider(
             this,
@@ -42,13 +46,13 @@ class VoterInfoFragment : Fragment() {
 
         voterInfoViewModel.loadElectionInfo(address, args.argElectionId, args.argLoadFromDb)
 
-        voterInfoViewModel.election.observe(requireActivity(), {
+        voterInfoViewModel.election.observe(requireActivity()) {
             binding.election = it
-        })
+        }
 
-        voterInfoViewModel.stateAdministrationBody.observe(viewLifecycleOwner, {
+        voterInfoViewModel.stateAdministrationBody.observe(viewLifecycleOwner) {
             binding.stateAdministrationBody = it
-        })
+        }
 
 
         binding.stateBallot.setOnClickListener {
@@ -62,9 +66,9 @@ class VoterInfoFragment : Fragment() {
         }
 
 
-        voterInfoViewModel.followElectionButtonText.observe(viewLifecycleOwner, {
+        voterInfoViewModel.followElectionButtonText.observe(viewLifecycleOwner) {
             binding.followElectionButton.text = it
-        })
+        }
 
         binding.followElectionButton.setOnClickListener {
             voterInfoViewModel.followOrUnfollowElection(args.argElectionId)

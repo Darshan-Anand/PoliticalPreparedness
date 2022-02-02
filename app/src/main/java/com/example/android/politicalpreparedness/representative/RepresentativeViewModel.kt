@@ -1,6 +1,5 @@
 package com.example.android.politicalpreparedness.representative
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.Repository
 import com.example.android.politicalpreparedness.network.models.Address
@@ -9,7 +8,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RepresentativeViewModel(
-    applicationContext: Context,
+    private val repository: Repository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -19,8 +18,6 @@ class RepresentativeViewModel(
     private val stateKey = "state"
     private val zipKey = "zip"
     private val showListKey = "list"
-
-    private val repository = Repository(applicationContext)
 
     private var _representatives = MutableLiveData<List<Representative>>()
     val representatives: LiveData<List<Representative>>

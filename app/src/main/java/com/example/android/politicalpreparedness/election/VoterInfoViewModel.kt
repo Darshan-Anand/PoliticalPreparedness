@@ -1,6 +1,5 @@
 package com.example.android.politicalpreparedness.election
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,9 +14,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-class VoterInfoViewModel(applicationContext: Context) :
+class VoterInfoViewModel(private val repository: Repository) :
     ViewModel() {
-    private val repository = Repository(applicationContext)
 
     private val _election = MutableLiveData<Election>()
     val election: LiveData<Election>

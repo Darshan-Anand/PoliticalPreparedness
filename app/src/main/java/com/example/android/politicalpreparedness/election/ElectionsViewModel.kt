@@ -1,6 +1,5 @@
 package com.example.android.politicalpreparedness.election
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,9 +9,7 @@ import com.example.android.politicalpreparedness.network.models.Election
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ElectionsViewModel(applicationContext: Context) : ViewModel() {
-
-    private val repository = Repository(applicationContext)
+class ElectionsViewModel(private val repository: Repository) : ViewModel() {
 
     private val _upcomingElections = MutableLiveData<List<Election>>()
     val upcomingElections: LiveData<List<Election>>

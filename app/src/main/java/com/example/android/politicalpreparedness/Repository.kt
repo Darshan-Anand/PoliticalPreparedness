@@ -1,6 +1,5 @@
 package com.example.android.politicalpreparedness
 
-import android.content.Context
 import com.example.android.politicalpreparedness.database.ElectionAndAdministrationBody
 import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.CivicsApi
@@ -11,9 +10,8 @@ import com.example.android.politicalpreparedness.network.models.VoterInfoRespons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class Repository(applicationContext: Context) {
+class Repository(private val database: ElectionDatabase) {
 
-    private val database = ElectionDatabase.getDatabase(applicationContext)
 
     suspend fun getUpcomingElectionsList(): List<Election> {
         val upcomingElection: List<Election>

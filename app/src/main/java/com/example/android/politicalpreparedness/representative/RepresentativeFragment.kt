@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.android.politicalpreparedness.Repository
+import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
 import com.example.android.politicalpreparedness.network.models.Address
@@ -43,8 +45,10 @@ class DetailFragment : Fragment() {
     ): View? {
         binding = FragmentRepresentativeBinding.inflate(inflater, container, false)
 
+        val database = ElectionDatabase.getDatabase(requireActivity().applicationContext)
+        val repository = Repository(database)
         val representativeViewModelFactory =
-            RepresentativeViewModelFactory(requireActivity().applicationContext, this)
+            RepresentativeViewModelFactory(repository, this)
 
         representativeViewModel = ViewModelProvider(
             this,
@@ -87,21 +91,21 @@ class DetailFragment : Fragment() {
             checkLocationPermissions()
         }
 
-        representativeViewModel.representatives.observe(viewLifecycleOwner, {
+        representativeViewModel.representatives.observe(viewLifecycleOwner) {
             hideKeyboard()
             representativeAdapter.submitList(it)
             representativeViewModel.setListShowing(true)
-        })
+        }
 
-        representativeViewModel.motionTransition.observe(viewLifecycleOwner, { id ->
+        representativeViewModel.motionTransition.observe(viewLifecycleOwner) { id ->
             if (id != null) {
                 binding.constraintContainer.transitionToState(id)
             }
-        })
+        }
 
-        representativeViewModel.networkException.observe(this.viewLifecycleOwner, {
+        representativeViewModel.networkException.observe(this.viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-        })
+        }
 
         return binding.root
     }
@@ -113,14 +117,14 @@ class DetailFragment : Fragment() {
 
     private fun checkNetworkAvailable() {
         ElectionsNetworkManager.getInstance(requireActivity().applicationContext).connectedToNetwork.observe(
-            this.viewLifecycleOwner,
-            { isNetworkAvailable ->
-                Timber.d("isNetworkAvailable: $isNetworkAvailable")
-                if (!isNetworkAvailable) {
-                    Toast.makeText(requireContext(), "No Network Available", Toast.LENGTH_LONG)
-                        .show()
-                }
-            })
+            this.viewLifecycleOwner
+        ) { isNetworkAvailable ->
+            Timber.d("isNetworkAvailable: $isNetworkAvailable")
+            if (!isNetworkAvailable) {
+                Toast.makeText(requireContext(), "No Network Available", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
     }
 
     private fun checkAddressFieldsNotEmpty(): String? {
