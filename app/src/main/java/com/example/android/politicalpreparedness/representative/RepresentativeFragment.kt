@@ -16,8 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.android.politicalpreparedness.Repository
-import com.example.android.politicalpreparedness.database.ElectionDatabase
+import com.example.android.politicalpreparedness.PoliticalPreparedness
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
 import com.example.android.politicalpreparedness.network.models.Address
@@ -45,10 +44,9 @@ class DetailFragment : Fragment() {
     ): View? {
         binding = FragmentRepresentativeBinding.inflate(inflater, container, false)
 
-        val database = ElectionDatabase.getDatabase(requireActivity().applicationContext)
-        val repository = Repository(database)
+        val appContainer = (requireActivity().application as PoliticalPreparedness).appContainer
         val representativeViewModelFactory =
-            RepresentativeViewModelFactory(repository, this)
+            RepresentativeViewModelFactory(appContainer.repository, this)
 
         representativeViewModel = ViewModelProvider(
             this,

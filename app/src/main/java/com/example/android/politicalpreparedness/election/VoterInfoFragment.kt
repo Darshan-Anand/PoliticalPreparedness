@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-import com.example.android.politicalpreparedness.Repository
-import com.example.android.politicalpreparedness.database.ElectionDatabase
+import com.example.android.politicalpreparedness.PoliticalPreparedness
 import com.example.android.politicalpreparedness.databinding.FragmentVoterInfoBinding
 
 class VoterInfoFragment : Fragment() {
@@ -27,10 +26,9 @@ class VoterInfoFragment : Fragment() {
 
         binding = FragmentVoterInfoBinding.inflate(inflater)
 
-        val database = ElectionDatabase.getDatabase(requireActivity().applicationContext)
-        val repository = Repository(database)
+        val appContainer = (requireActivity().application as PoliticalPreparedness).appContainer
         val voterInfoViewModelFactory =
-            VoterInfoViewModelFactory(repository)
+            VoterInfoViewModelFactory(appContainer.repository)
 
         voterInfoViewModel = ViewModelProvider(
             this,

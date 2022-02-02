@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.android.politicalpreparedness.PoliticalPreparedness
 import com.example.android.politicalpreparedness.R
-import com.example.android.politicalpreparedness.Repository
-import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.databinding.FragmentElectionBinding
 import com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter
 import com.example.android.politicalpreparedness.network.ElectionsNetworkManager
@@ -27,10 +26,9 @@ class ElectionsFragment : Fragment() {
 
         binding = FragmentElectionBinding.inflate(inflater)
 
-        val database = ElectionDatabase.getDatabase(requireActivity().applicationContext)
-        val repository = Repository(database)
+        val appContainer = (requireActivity().application as PoliticalPreparedness).appContainer
         val electionsViewModelFactory =
-            ElectionsViewModelFactory(repository)
+            ElectionsViewModelFactory(appContainer.repository)
 
         electionsViewModel =
             ViewModelProvider(this, electionsViewModelFactory).get(ElectionsViewModel::class.java)
