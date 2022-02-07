@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'androidx.navigation.safeargs'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 31
@@ -87,5 +88,9 @@ dependencies {
 
     //Google-play service
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+    //Hilt
+    implementation "com.google.dagger:hilt-android:$version_hilt"
+    kapt "com.google.dagger:hilt-compiler:$version_hilt"
 
 }
